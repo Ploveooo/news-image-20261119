@@ -38,6 +38,12 @@ def main():
             "entry.png copy incomplete: wrote %d bytes, source is %d"
             % (os.path.getsize(dst), os.path.getsize(src))
         )
+    # The file must also be a real PNG, not just the right size: check the
+    # 8-byte PNG signature so a corrupt copy is caught even when its size
+    # happens to match.
+    with open(dst, "rb") as fh:
+        if fh.read(8) != b"\x89PNG\r\n\x1a\n":
+            raise IOError("entry.png copy is not a valid PNG (bad signature)")
 
 
 if __name__ == "__main__":
